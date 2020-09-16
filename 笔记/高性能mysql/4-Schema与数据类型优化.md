@@ -27,7 +27,7 @@ FLOAT、DOUBLE 和 DECIMAL 都可以指定列宽，例如 DECIMAL(18, 9) 表示�
 ###### varchar
 
 1. varchar用来储存可变长的字符串，但如果数据库表的列使用ROW_FORMAT=FIXED创建的话，每一行都会使用定长储存。
-2. varchar 需要使用1或2个记录字符串的长度。、
+2. varchar 需要使用1或2个记录字符串的长度。
 3. varchar 是变长的，但是由于是变长的。在执行UPDATE语句的时候，使行的长度增加，造成额外的工作。
 
 使用varchar的情况
