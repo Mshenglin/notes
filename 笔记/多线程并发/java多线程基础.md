@@ -16,7 +16,7 @@
 
 Thread的类声明
 
-```
+```java
 class Thread implements Runnable
 ```
 
@@ -191,9 +191,54 @@ yield()用于放弃CPU资源，让其他资源去占用CPU资源，释放的时�
 
 ##### 3.8 线程的优先级
 
+java通过setsetPriority()方法来设置优先级，优先级是1-10级，如果小于1或者大于10就会抛出IllegalArgumentException异常。
 
+下面这三个常量用来设置线程的优先级。
 
+```java
 
+    /**
+     * The minimum priority that a thread can have.
+     */
+    public final static int MIN_PRIORITY = 1;
 
-###### 
+   /**
+     * The default priority that is assigned to a thread.
+     */
+    public final static int NORM_PRIORITY = 5;
 
+    /**
+     * The maximum priority that a thread can have.
+     */
+    public final static int MAX_PRIORITY = 10;
+```
+
+setPriority()源码
+
+```java
+ public final void setPriority(int newPriority) {
+        ThreadGroup g;
+        checkAccess();
+        if (newPriority > MAX_PRIORITY || newPriority < MIN_PRIORITY) {
+            throw new IllegalArgumentException();
+        }
+        if((g = getThreadGroup()) != null) {
+            if (newPriority > g.getMaxPriority()) {
+                newPriority = g.getMaxPriority();
+            }
+            setPriority0(priority = newPriority);
+        }
+    }
+```
+
+###### 3.8.1 线程的优先级是可以继承的
+
+现成的优先级具有继承性。例如，A线程启动了B线程，所以B线程的优先级和A线程是相同的。
+
+###### 3.8.2 线程的优先级是有随机性的
+
+在一般情况下，高优先级的线程会在低优先级的线程执行完毕之前执行完，但是不是一定的，它具有不确定性。
+
+### 小结
+
+该章主要讲了实现多线程的两种方式，继承Tread和实现Runnable接口。以及Thread类中常用的API。
