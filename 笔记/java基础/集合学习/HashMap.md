@@ -4,11 +4,11 @@
 
 ​    HashMap是根据哈希表实现的。他的底层是基于数组+链表实现完成的（java6，7）。
 
-Java8对其结构进行了改变。当链表的长度大于8就会将链表转化为红黑树。
+Java8对其结构进行了改变。当链表的长度大于8就会将链表转化为红黑树（当数组的长度）。
 
 ##### jdk源码
 
-##### 一、类与基本属性
+##### 一、类的定义
 
 ```java
 public class HashMap<K,V>
@@ -16,7 +16,9 @@ public class HashMap<K,V>
     implements Map<K,V>, Cloneable, Serializable
 ```
 
-根据上面的代码，可以看出他继承了AbstractMap类，并实现了Map<K,V>根接口，Cloneable接口（可以被克隆），Serializable（可以序列化）。
+根据上面的代码，可以看出他继承了`AbstractMap`类，并实现了`Map<K,V>`根接口`，Cloneable接口`（可以被克隆），`Serializable`（可以序列化）。
+
+##### 属性
 
 ```java
 /**
@@ -41,6 +43,10 @@ public class HashMap<K,V>
 */
  static final int UNTREEIFY_THRESHOLD = 6;
 /**
+*最小树形化容量，当内部的数组长度小于64时，链表不会转化为树，优先扩充数组
+*/
+static final int MIN_TREEIFY_CAPACITY = 64;
+/**
 *储存数据的Node数组，长度为2的整数次幂
 */
 transient Entry[] table;
@@ -57,16 +63,16 @@ transient Entry[] table;
 */
     transient int modCount;
 /**
-*最小树形化容量，当内部的数组长度小于64时，链表不会转化为树，优先扩充数组
+*j加载因子
 */
-  static final int MIN_TREEIFY_CAPACITY = 64;
+ final float loadFactor;
 ```
 
 加载因子的理解：https://my.oschina.net/weiweiblog/blog/612812
 
 > ###### 何为加载因子？
 >
-> 加载因子是表示Hash表中元素的填满的程度.若:加载因子越大,填满的元素越多,好处是,空间利用率高了,但:冲突的机会加大了.反之,加载因子越小,填满的元素越少,好处是:冲突的机会减小了,但:空间浪费多了.
+> 加载因子是表示Hash表中元素的填满的程度.若加载因子越大,填满的元素越多,好处是,空间利用率高了,但冲突的机会加大了.反之,加载因子越小,填满的元素越少,好处是冲突的机会减小了,但空间浪费多了.
 >
 >
 > 冲突的机会越大,则查找的成本越高.反之,查找的成本越小.因而,查找时间就越小.
@@ -76,10 +82,20 @@ transient Entry[] table;
 
 ##### 二、构造方法
 
+HashMap有四个构造方法：
 
+1. 无参构造。
+2. 指定容量的构造方法。
+3. 指定容量和加载因子的构造方法。
+4. 指定集合的构造方法。
 
 ```java
-     public HashMap(int initialCapacity, float loadFactor) {
+  //默认的无参构造方法，将加载因子设置成默认的0.75
+ public HashMap() {
+        this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
+ }
+//指定初始容量，以及加载因子的构造
+public HashMap(int initialCapacity, float loadFactor) {
          //判断传入大小是否合法
         if (initialCapacity < 0)
             throw new IllegalArgumentException("Illegal initial capacity: " +
@@ -106,40 +122,41 @@ transient Entry[] table;
         n |= n >>> 16;
         return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
     }
-
-
-
+//指定容量的构造方法
+public HashMap(int initialCapacity) {
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+//传入指定集合的构造方法
+public HashMap(Map<? extends K, ? extends V> m) {
+        this.loadFactor = DEFAULT_LOAD_FACTOR;
+        putMapEntries(m, false);//该方法后面会解析
+    }
 ```
-​	在上面代码中tableSizeFor（）方法实现了将传进来的大小参数转化为大于initialCapacity值的最小2的整数次幂的数。
+在上面代码中`tableSizeFor()`方法实现了将传进来的大小参数转化为大于`initialCapacity`值的最小2的整数次幂的数。
 
-具体时如何实现的呢？
-
-下面就以一个具体的例子来对该方法进行详细的讲解。
+具体时如何实现的呢？下面就以一个具体的例子来对该方法进行详细的讲解。
 
 假如传入参数为25，该数的二进制码为  11001
 
- int n = cap - 1;				这行代码防止参数为2的整数次幂，执行完方法后会变成2*cap
+` int n = cap - 1;`	这行代码防止参数为2的整数次幂，执行完方法后会变成`2*cap`
 
-n |=n>>>1;        这行代码可以拆解为以下几个步骤
+​     `n |=n>>>1; ` 这行代码可以拆解为以下几个步骤
 
-+ n>>>1;    n 无符号右移一位，结果为 01100
++ `n>>>1;  `  n 无符号右移一位，结果为 01100
 
-+  n |=n>>>1    n与n>>>1进行取 | 运算，结果为  11101   
++ `n |=n>>>1`    n与n>>>1进行取 | 运算，结果为  11101   
 
-n|=n>>>2    
+  `n|=n>>>2  `  
 
-+ n>>>2   对11101    右移两位  结果00111
-+ n|=n>>>2    结果为11111
++ `n>>>2 `  对11101右移两位结果00111
 
-由于n=11111，所以下面的运算不改变他的值
++ `n|=n>>>2 `   结果为11111
 
- return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+由于`n=11111`，所以下面的运算不改变他的值
 
-若n>MAXIMUM_CAPACITY 则返回MAXIMUM_CAPACITY(2^30),若小于则返回n+1.值为
+ `return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;`
 
-100000=2^5。既可以保证数值为2的整数次幂。
-
-
+若`n>MAXIMUM_CAPACITY `则返回`MAXIMUM_CAPACITY(2^30)`,若小于则返回n+1.值为`100000=2^5`。既可以保证数值为2的整数次幂。
 
 ###### Node类
 
@@ -173,7 +190,7 @@ Node(int hash, K key, V value, Node<K,V> next) {
             value = newValue;
             return oldValue;
         }
-                public final boolean equals(Object o) {
+            public final boolean equals(Object o) {
             if (o == this)
                 return true;
             if (o instanceof Map.Entry) {
@@ -186,14 +203,6 @@ Node(int hash, K key, V value, Node<K,V> next) {
         }
     }
 
-```
-
-###### hash()方法
-
-```java
-static final int hash(Object key) { 
-int h;  
-return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);}
 ```
 
 ###### put()方法
@@ -209,46 +218,47 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
         Node<K,V>[] tab; 
     Node<K,V> p; 
     int n, i;
-    //1.判断table为空则调用resize()对其初始化
+    //1.判断table为空则调用resize()对其初始化,将行创建的tab赋值
         if ((tab = table) == null || (n = tab.length) == 0)
             n = (tab = resize()).length;
-    //判断数组元素是否为空，若为空创建一个新的元素
+    /*判断数组元素是否为空，若为空创建一个新的元素。(n - 1) & hash将计算过的hash函数与数组的的索引最大值做&，计算得到的结果用作存放数组的索引，目的是散列更均匀*/
         if ((p = tab[i = (n - 1) & hash]) == null)
             tab[i] = newNode(hash, key, value, null);
-    
-     //若不为空，执行以下操作
+     /*桶索引位置若不为空，执行以下操作，索引到的数组位置上已经存在内容，即出现了碰撞这个时候需要更为复杂处理碰撞的方式来处理，如链表和树*/
         else {
+            //临时储存用的链表的节点
             Node<K,V> e;
             K k;
-            //如果key的值相同，直接覆盖
+            /*如果当前桶位置的元素和传入元素的key的值相同，发生碰撞，将老节点保存*/
             if (p.hash == hash &&
                 ((k = p.key) == key || (key != null && key.equals(k))))
                 e = p;
-            //判断p是否是红黑树
+            //判断当前节点是否是红黑树类型
             else if (p instanceof TreeNode)
-                //如果是执行运行以下方法
+                //如果是执行运行以下方法，其中this表示当前HashMap, tab为map中的数组
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
             else {
                 //如果不是，则p为链表
                 //对链表进行遍历
                 for (int binCount = 0; ; ++binCount) {
-                    //如果p的next为空，将新的值添加到链表后面
+                    //如果链表中没有该元素，将新的值添加到链表后面
                     if ((e = p.next) == null) {
                         p.next = newNode(hash, key, value, null);
-                        //如果链表长度大于8，链表转化为红黑树，执行插入操作
+                        /*REEIFY_THRESHOLD如果链表长度大于8，链表转化为红黑树，执行插入操作*/
                         if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
                             treeifyBin(tab, hash);
+                        //插入成功，跳出循环
                         break;
                     }
-                   // 找到相同的key值元素，跳出循环
+                   //链表中当前节点的key和插入元素相同，跳出循环
                     if (e.hash == hash &&
                         ((k = e.key) == key || (key != null && key.equals(k))))
                         break;
-                    //移动指针，指向p.next
+                    //配合e = p.next移动指针
                     p = e;
                 }
             }
-            //如果上面的节点存在
+            //此时的e是保存的被碰撞的那个节点，即老节点
             if (e != null) { // existing mapping for key
              V oldValue = e.value;  //保存旧的value值
                 
@@ -262,7 +272,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
         }
     
         ++modCount;
-    //判断是否进行扩容操作
+    //判断是否进行扩容操作，标准是当前哈希表中的元素个数
         if (++size > threshold)
             resize();
         afterNodeInsertion(evict);
@@ -277,45 +287,55 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 ```java
 final Node<K,V>[] resize() {
     //该方法使用情景：1.初始化化哈希表 2.容量不够，进行扩容
+    //将新类中的table赋值给oldTab
 Node<K,V>[] oldTab = table;
+    //哈希表旧容量
 int oldCap = (oldTab == null) ? 0 : oldTab.length;   //数组的长度 
-int oldThr = threshold; 
+	//哈希表旧扩容阈值
+    int oldThr = threshold; 
+    //设立新的容量
 int newCap, newThr = 0;
+    //哈希表被初始化，且确定容量
  if (oldCap > 0) {
      //若扩容前超过最大值，就不进行扩充
             if (oldCap >= MAXIMUM_CAPACITY) {
                 threshold = Integer.MAX_VALUE;
                 return oldTab;
             }
-     //若没有超过最大值，则将newCap设置成oldCap的二倍，且 
-    // DEFAULT_INITIAL_CAPACITY   <= newCap < MAXIMUM_CAPACITY
+     //若没有超过最大值，则将newCap设置成oldCap的二倍
             else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
                      oldCap >= DEFAULT_INITIAL_CAPACITY)
-                //将threshold扩大为原来的二倍
+                //满足扩容后的新容量小于最大容量且老容量大于等于默认容量将threshold扩大为原来的二倍
                 newThr = oldThr << 1; // double threshold
         }
-    //针对第一种情况：初始化哈希表
+    //
     //如果数组没有被创建，但是已经指定了threshold(调用有参构造)，threshold为数组的长度
-    else if (oldThr > 0) // ？？ initial capacity was placed in threshold（初始容量设置成临界值）
+    else if (oldThr > 0) // initial capacity was placed in threshold（初始容量设置成临界值）
             newCap = oldThr;
         else {  
-            //使用默认初始化
-           // zero initial threshold signifies using defaults
+            /*使用默认初始化（zero initial threshold signifies using defaults）
+            *执行到这里，表示初始容量和阈值都没被初始化，使用默认的值初始化
+            *DEFAULT_INITIAL_CAPACITY = 1 << 4 = 16
+            * DEFAULT_LOAD_FACTOR = 0.75f
+            */
+            //新容量等于16
             newCap = DEFAULT_INITIAL_CAPACITY;
+            //新的阈值是12
             newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
         }
-    //   ？？
+       //
         if (newThr == 0) {
-            //
+            //计算新的阈值
             float ft = (float)newCap * loadFactor;
+            //如果计算得到的新阈值大于最大值，将阈值设置成最大值
             newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
                       (int)ft : Integer.MAX_VALUE);
         }
-    //新的数组长度已经被建立
+       //阈值确定完成
         threshold = newThr;
         @SuppressWarnings({"rawtypes","unchecked"})
-    //新建一个table数组
-            Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+    //新建一个table数组，容量是上面确定的容量
+     Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
         table = newTab;
     /**
     *  下面将会是将原来的数组转移到新的数组，table与oldTab转换
@@ -381,22 +401,22 @@ int newCap, newThr = 0;
     }
 ```
 
-为何当(e.hash & oldCap) == 1时，就会存在newTab[j+oldtable]呢？
+为何当`(e.hash & oldCap) == 1`时，就会存在`newTab[j+oldtable]`呢？
 
 原文地址：
 
 > 首先我们要明确三点:
 >
-> 1. oldCap一定是2的整数次幂, 这里假设是2^m
-> 2. newCap是oldCap的两倍, 则会是2^(m+1)
-> 3. hash对数组大小取模`(n - 1) & hash` 其实就是取hash的低`m`位
+> 1. `oldCap`一定是2的整数次幂, 这里假设是`2^m`
+> 2. `newCap`是`oldCap`的两倍, 则会是`2^(m+1)`
+> 3. `hash`对数组大小取模`(n - 1) & hash` 其实就是取`hash`的低`m`位
 >
 > 例如:
 > 我们假设 oldCap = 16, 即 2^4,
 > 16 - 1 = 15, 二进制表示为 `0000 0000 0000 0000 0000 0000 0000 1111`
 > 可见除了低4位, 其他位置都是0（简洁起见，高位的0后面就不写了）, 则 `(16-1) & hash` 自然就是取hash值的低4位,我们假设它为 `abcd`.
 >
-> 以此类推, 当我们将oldCap扩大两倍后, 新的index的位置就变成了 `(32-1) & hash`, 其实就是取 hash值的低5位. 那么对于同一个Node, 低5位的值无外乎下面两种情况:
+> 以此类推, 当我们将`oldCap`扩大两倍后, 新的index的位置就变成了 `(32-1) & hash`, 其实就是取 hash值的低5位. 那么对于同一个Node, 低5位的值无外乎下面两种情况:
 >
 > ```
 > 0abcd
@@ -442,15 +462,15 @@ if ((p = tab[i = (n - 1) & hash]) == null)
 
 上面这行代码决定要插入元素的具体位置。
 
-i=(n-1)&hash等价于 i=hash % n；
+`i=(n-1)&hash`等价于 `i=hash % n；`
 
 举个例子说明为什么相同。假如长度为8，则二进制码为0000 1000
 
-得到一个随机的hash为0010 1101 = 61
+得到一个随机的`hash`为0010 1101 = 61
 
-i=(n-1)&hash =（0000 0111）&（0010 1101）= 0000 0101=5
+`i=(n-1)&hash =（0000 0111）&（0010 1101）= 0000 0101=5`
 
- i=hash % n=61% 8 = 5
+` i=hash % n=61% 8 = 5`
 
 因为效率的原因，所以采用i=(n-1)&hash
 
