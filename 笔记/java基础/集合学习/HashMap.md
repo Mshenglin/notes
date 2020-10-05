@@ -1,4 +1,4 @@
-##  HashMap
+##  0HashMap
 
 #### HashMap基本实现原理
 
@@ -453,7 +453,7 @@ return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 }
 ```
 
-hash()方法将key的hashcode值进行无符号的右移16位，并对其异或运算，增加他的随机度。让他的高位也参与运算，变相的保留了他的高位特性。
+`hash()`方法将key的`hashcode`值进行无符号的右移16位，并对其异或运算，增加他的随机度。让他的高位也参与运算，变相的保留了他的高位特性。
 
 ```java
  n = (tab = resize()).length;//Hash表的长度

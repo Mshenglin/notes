@@ -152,7 +152,7 @@ private void ensureExplicitCapacity(int minCapacity) {
     	//用于迭代器验证
         modCount++;
         // overflow-conscious code
-    	//如果确定最小容量小于存储元素的个数，触发扩容
+    	//如果确定最小容量大于存储元素的个数（就是要存储的元素个数第时机的容量多），触发扩容
         if (minCapacity - elementData.length > 0)
             grow(minCapacity);
     }
