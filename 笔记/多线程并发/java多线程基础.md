@@ -116,8 +116,6 @@ public class Run {
 
 #### 3  Thread类中的方法
 
-![](https://ftp.bmp.ovh/imgs/2020/09/9b9210b279b6eb3d.jpg)
-
 ##### 3.1 currentThread()方法
 
 currentThread()该方法返回代码段正在被按一个线程执行。  
