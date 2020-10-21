@@ -10,7 +10,7 @@
 - [10.3 跳台阶](https://cyc2018.github.io/CS-Notes/#/notes/10.3 跳台阶)*
 - [10.4 变态跳台阶](https://cyc2018.github.io/CS-Notes/#/notes/10.4 变态跳台阶)*
 - [11. 旋转数组的最小数字](https://cyc2018.github.io/CS-Notes/#/notes/11. 旋转数组的最小数字)
-- [12. 矩阵中的路径](https://cyc2018.github.io/CS-Notes/#/notes/12. 矩阵中的路径)*
+- [12. 矩阵中的路径](https://cyc2018.github.io/CS-Notes/#/notes/12. 矩阵中的路径)
 - [13. 机器人的运动范围](https://cyc2018.github.io/CS-Notes/#/notes/13. 机器人的运动范围)
 - [14. 剪绳子](https://cyc2018.github.io/CS-Notes/#/notes/14. 剪绳子)
 - [15. 二进制中 1 的个数](https://cyc2018.github.io/CS-Notes/#/notes/15. 二进制中 1 的个数)
@@ -71,7 +71,7 @@
 - [63. 股票的最大利润](https://cyc2018.github.io/CS-Notes/#/notes/63. 股票的最大利润)
 - [64. 求 1+2+3+...+n](https://cyc2018.github.io/CS-Notes/#/notes/64. 求 1+2+3+...+n)
 - [65. 不用加减乘除做加法](https://cyc2018.github.io/CS-Notes/#/notes/65. 不用加减乘除做加法)
-- [66. 构建乘积数组](https://cyc2018.github.io/CS-Notes/#/notes/66. 构建乘积数组)
+- [66. 构建乘积数组](https://cyc2018.github.io/CS-Notes/#/notes/66. 构建乘积数组)*
 - [67. 把字符串转换成整数](https://cyc2018.github.io/CS-Notes/#/notes/67. 把字符串转换成整数)
 - [68. 树中两个节点的最低公共祖先](https://cyc2018.github.io/CS-Notes/#/notes/68. 树中两个节点的最低公共祖先)
 
