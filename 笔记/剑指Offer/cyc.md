@@ -10,7 +10,7 @@
 - [10.3 跳台阶](https://cyc2018.github.io/CS-Notes/#/notes/10.3 跳台阶)*
 - [10.4 变态跳台阶](https://cyc2018.github.io/CS-Notes/#/notes/10.4 变态跳台阶)*
 - [11. 旋转数组的最小数字](https://cyc2018.github.io/CS-Notes/#/notes/11. 旋转数组的最小数字)
-- [12. 矩阵中的路径](https://cyc2018.github.io/CS-Notes/#/notes/12. 矩阵中的路径)
+- [12. 矩阵中的路径](https://cyc2018.github.io/CS-Notes/#/notes/12. 矩阵中的路径)*
 - [13. 机器人的运动范围](https://cyc2018.github.io/CS-Notes/#/notes/13. 机器人的运动范围)
 - [14. 剪绳子](https://cyc2018.github.io/CS-Notes/#/notes/14. 剪绳子)
 - [15. 二进制中 1 的个数](https://cyc2018.github.io/CS-Notes/#/notes/15. 二进制中 1 的个数)
