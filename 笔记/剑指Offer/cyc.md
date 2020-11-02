@@ -40,7 +40,7 @@
 - [36. 二叉搜索树与双向链表](https://cyc2018.github.io/CS-Notes/#/notes/36. 二叉搜索树与双向链表)
 - [37. 序列化二叉树](https://cyc2018.github.io/CS-Notes/#/notes/37. 序列化二叉树)
 - [38. 字符串的排列](https://cyc2018.github.io/CS-Notes/#/notes/38. 字符串的排列)
-- [39. 数组中出现次数超过一半的数字](https://cyc2018.github.io/CS-Notes/#/notes/39. 数组中出现次数超过一半的数字)
+- [39. 数组中出现次数超过一半的数字](https://cyc2018.github.io/CS-Notes/#/notes/39. 数组中出现次数超过一半的数字)*
 - [40. 最小的 K 个数](https://cyc2018.github.io/CS-Notes/#/notes/40. 最小的 K 个数)
 - [41.1 数据流中的中位数](https://cyc2018.github.io/CS-Notes/#/notes/41.1 数据流中的中位数)
 - [41.2 字符流中第一个不重复的字符](https://cyc2018.github.io/CS-Notes/#/notes/41.2 字符流中第一个不重复的字符)
