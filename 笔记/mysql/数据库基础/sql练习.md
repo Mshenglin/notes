@@ -18,7 +18,7 @@ PRIMARY KEY (`emp_no`));
 
 #### 解题思路
 
-将记录按照降序排练，取出第一条记录
+将记录按照降序排练，取出第一条记录，局yang'fenyangfen
 
 ```mysql
 select * from employees
@@ -93,7 +93,7 @@ order by s1.emp_no;
 
 #### 题目描述
 
-查找所有员工的last_name和first_name以及对应部门编号dept_no，也包括暂时没有分配具体部门的员工(请注意输出描述里各个列的前后顺序)
+查找所有员工的last_name和first_name以及对应部门编号dept_no，**也包括暂时没有分配具体部门的员工**(请注意输出描述里各个列的前后顺序)
 
 ```mysql
 CREATE TABLE `dept_emp` (
@@ -114,7 +114,76 @@ PRIMARY KEY (`emp_no`));
 
 #### 解题思路
 
+由于可能在拥有姓名但是没有部门的情况，所以需要使用外连接查询
+
+```mysql
+select s1.last_name,s1.first_name,s2.dept_no  -- 查询的列
+from employees  s1
+left join dept_emp  s2 -- 查询的主表和从表
+on s1.emp_no=s2.emp_no; -- 限定条件
 ```
 
+
+
+### 5.查找所有员工入职时候的薪水情况
+
+#### 题目描述
+
+查找所有员工入职时候的薪水情况，给出emp_no以及salary， 并按照emp_no进行逆序(请注意，一个员工可能有多次涨薪的情况)
+
+```mysql
+CREATE TABLE `employees` (
+`emp_no` int(11) NOT NULL,
+`birth_date` date NOT NULL,
+`first_name` varchar(14) NOT NULL,
+`last_name` varchar(16) NOT NULL,
+`gender` char(1) NOT NULL,
+`hire_date` date NOT NULL,
+PRIMARY KEY (`emp_no`));
+CREATE TABLE `salaries` (
+`emp_no` int(11) NOT NULL,
+`salary` int(11) NOT NULL,
+`from_date` date NOT NULL,
+`to_date` date NOT NULL,
+PRIMARY KEY (`emp_no`,`from_date`));
 ```
 
+#### 解题思路
+
+根据题目的提示，一个员工可能拥有多次涨薪的机会，说明在salaries中存在一个员工的多条记录，所以只要查找入职的那天的薪资。
+
+```mysql
+select 
+  e.emp_no,s.salary -- 被筛选的列 
+ from employees as e
+ inner join  salaries as s
+ on e.emp_no=s.emp_no and e.hire_date = s.from_date -- 两表连接的条件
+ order by 
+ s.emp_no DESC;-- 排序
+```
+
+### 6.查找薪水涨幅超过15次的员工号emp_no以及其对应的涨幅次数t
+
+#### 题目描述
+
+
+
+#### 解题思路
+
+### 1
+
+#### 题目描述
+
+#### 解题思路
+
+### 1
+
+#### 题目描述
+
+#### 解题思路
+
+### 1
+
+#### 题目描述
+
+#### 解题思路
