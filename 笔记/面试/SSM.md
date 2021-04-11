@@ -6,7 +6,15 @@
 
 3.SpringIOC和AOP?
 
-4.
+4.Spring的启动流程
+
+5.Spring Bean的注入方式
+
+6.Spring Bean的初始化过程.
+
+7.Spring如何解决循环依赖.
+
+8.Spring如何实现懒加载.
 
 ### SpringMVC
 
