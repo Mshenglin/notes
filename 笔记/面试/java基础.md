@@ -72,3 +72,12 @@ equal():也是用来判断两个对象是否相同，但是他不可以用来比
 ##### 1.String，StringBuffer和StringBuilder的区别 **(String是不可变类有什么好处)**
 
 ##### 2.抽象类与接口的区别
+
+##### 3.Object类中都有什么方法呢。
+
+##### 4.hashcode()和equals的关系是什么？重写equals一定要重写hashcode吗
+
+##### 5.clone方法是深拷贝还是浅拷贝？如何实现深拷贝？
+
+
+
