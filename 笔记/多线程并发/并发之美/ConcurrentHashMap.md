@@ -77,6 +77,16 @@ public ConcurrentHashMap(int initialCapacity,float loadFactor, int concurrencyLe
 }
 ```
 
+初始化的完成以后，我们就可以得到一个segment的数组。
+
+如果使用无参构造，初始化完成后。会有一下特征：
+
+1.默认segment的大小是16，不可扩容。
+
+2.segment[i]的初始容量是2，阈值是1.5，插入第一次元素不会发生扩容，第二次插入元素才可以发生扩容。
+
+3.初始化了segment[0],其他位置都是null.
+
 ### 2.2.2一些重要的方法
 
 #### put()
