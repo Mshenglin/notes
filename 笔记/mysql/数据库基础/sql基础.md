@@ -12,7 +12,15 @@
 
 #### 四、插入
 
+```
+insert into mytable(c1,c2) values(v1,v2);
+```
+
 #### 五、更新
+
+```
+UPDATE  mytable set col=val where id=1;
+```
 
 #### 六、删除
 

@@ -1,6 +1,14 @@
 ##### 1.Netty的好处？
 
+1.提供了简单的接口，简化编程难度。
+
+2.自定义一些编解码器可以解决TCP的粘包拆包的问题
+
+3.成熟。
+
 ##### 2.Netty的组件？
+
+1.
 
 ##### 3、直接用nio有什么问题吗？selector的[源码](https://www.nowcoder.com/jump/super-jump/word?word=源码)看过吗？说一下？
 
